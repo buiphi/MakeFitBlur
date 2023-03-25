@@ -21,6 +21,7 @@ Controller::Controller(QQmlApplicationEngine *engine)
     m_engine->rootContext()->setContextProperty("myTotal", QVariant(0));
     m_engine->rootContext()->setContextProperty("myCompleted", QVariant(0));
     m_engine->rootContext()->setContextProperty("controller", this);
+
 }
 
 Controller::~Controller()
