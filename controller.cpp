@@ -113,7 +113,6 @@ void Controller::save(int radius)
         return;
     }
 
-
     m_selectedFolder = QFileDialog::getExistingDirectory(nullptr, tr("Open Directory"),
                                                  QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
                                                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
