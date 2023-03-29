@@ -8,31 +8,27 @@ Window {
     visible: true
     maximumHeight: 5000
     maximumWidth: 5000
-    width: myImageWidth
-    height: myImage.height
+    width: myImage.width
+    height: originImage.height
     onHeightChanged: {
         console.log("Phi: onHeightChanged " + height)
     }
 
     title: qsTr("Blur Image")
     objectName: "window"
+
     FastBlur {
-        width: myImageWidth
-        height: myImageHeight
+        width: myImage.width
+        height: myImage.height
         anchors.verticalCenter: parent.verticalCenter
 
-        source : myImage
-        radius: myRadius
+        source : originImage
+        radius: myImage.radius
 
         Image{
-            id: myImage
-            source: myImageSource
+            id: originImage
+            source: myImage.source
             anchors.centerIn: parent
-            smooth: true
-        }
-
-        Component.onCompleted: {
-            console.log("onCompleted " + myImageSource)
         }
     }
 }

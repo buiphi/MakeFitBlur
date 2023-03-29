@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>blurimage.qml</file>
+        <file>BlurImage.qml</file>
     </qresource>
 </RCC>

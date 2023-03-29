@@ -33,6 +33,7 @@ Window {
     Button{
         text: "save"
         objectName: "save"
+        enabled: myImage.total != 0
         y : 100
         onClicked: {
             controller.save(txtRadius.text)
@@ -41,11 +42,11 @@ Window {
 
     Text{
         y: 150
-        text: "Total: " + myTotal
+        text: "Total: " + myImage.total
     }
 
     Text {
         y: 200
-        text: "Completed: " + myCompleted
+        text: "Completed: " + myImage.completeTotal
     }
 }

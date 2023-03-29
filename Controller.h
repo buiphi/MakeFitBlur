@@ -7,14 +7,18 @@
 #include <QTimer>
 #include <QQmlApplicationEngine>
 #include <queue>
+#include "ImageModel.h"
 
 class Controller : public QObject
 {
     Q_OBJECT
 public:
-    Controller(QQmlApplicationEngine *engine);
+    Controller(MyImageModel *myImageModel,QQmlApplicationEngine *engine);
 
     ~Controller();
+
+signals:
+    void calculateBlurSize(const QStringList &fileNames);
 
 public slots:
     void onFrameSwapped();
@@ -22,9 +26,11 @@ public slots:
     void save();
     void save(int radius);
 
+    void update();
+    void onCalculateBlurSizeFinished();
 
 private:
-    QObject *m_imageWindow;
+    QQuickWindow *m_imageWindow;
     QQmlApplicationEngine *m_engine;
 
     int m_totalImage;
@@ -32,16 +38,12 @@ private:
     QString m_selectedFolder;
     int m_radius;
 
-    struct MyImage{
-        QString imageSource;
-        float imageWidth;
-        float imageHeight;
-    };
     std::queue<MyImage> m_myImageQueue;
-
+    MyImageModel *m_myImageModel;
 private:
     void createImageWindow();
-    void attachNewImage();
+    void calculateBlurSizeInAThread(const QStringList &fileNames);
+
 };
 
 #endif // CONTROLLER_H

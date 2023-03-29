@@ -1,13 +1,51 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
-#include <QDebug>
-#include <controller.h>
+#include <Controller.h>
 #include <QQmlContext>
+
+#include <iostream>
+#include <csignal>
+#include "Logger.h"
+
+
+void sig_handler(int signum){
+    switch (signum) {
+    case SIGTERM:
+        qDebug() << "Error: SIGTERM";
+        break;
+    case SIGSEGV:
+        qDebug() << "Error: SIGSEGV";
+        break;
+    case SIGINT:
+        qDebug() << "Error: SIGINT";
+        break;
+    case SIGILL:
+        qDebug() << "Error: SIGILL";
+        break;
+    case SIGABRT:
+        qDebug() << "Error: SIGABRT";
+        break;
+    case SIGFPE:
+        qDebug() << "Error: SIGFPE";
+        break;
+    default:
+        qDebug() << "undefine";
+        break;
+    }
+}
 
 
 int main(int argc, char *argv[])
 {
+    signal(SIGTERM, sig_handler);
+    signal(SIGSEGV, sig_handler);
+    signal(SIGINT,  sig_handler);
+    signal(SIGILL,  sig_handler);
+    signal(SIGABRT, sig_handler);
+    signal(SIGFPE,  sig_handler);
+
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
@@ -21,10 +59,10 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    Controller controller(&engine);
+    MyImageModel *myImageModel = new MyImageModel;
+    Controller controller(myImageModel, &engine);
 
     engine.load(url);
-
 
     return app.exec();
 }
