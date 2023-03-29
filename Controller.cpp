@@ -13,6 +13,7 @@
 
 Controller::Controller(MyImageModel *myImageModel, QQmlApplicationEngine *engine)
     : QObject(engine)
+    , m_imageWindow(nullptr)
     , m_engine(engine)
     , m_totalImage(0)
     , m_completedImage(0)
@@ -31,6 +32,12 @@ Controller::~Controller()
 void Controller::onFrameSwapped()
 {
     _LOG() << "onFrameSwapped";
+
+    if(m_myImageQueue.empty())
+    {
+        _LOG() << "empty !!!";
+        return;
+    }
 
     save();
     m_myImageQueue.pop();
@@ -51,12 +58,19 @@ void Controller::open()
 
     m_totalImage = fileNames.size();
     m_myImageModel->setTotal(m_totalImage);
+    m_myImageModel->setCompleteTotal(0);
 
     calculateBlurSizeInAThread(fileNames);
 }
 
 void Controller::save()
 {
+    if(m_myImageQueue.empty())
+    {
+        _LOG() << "empty !!!";
+        return;
+    }
+
     QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_myImageQueue.front().source).baseName() + "_blur.png";
 
     if(QFile::exists(nameBlur))
@@ -116,10 +130,14 @@ void Controller::onCalculateBlurSizeFinished()
 void Controller::createImageWindow()
 {
     m_myImageModel->setRadius(m_radius);
-
-    m_engine->load(QUrl("qrc:///BlurImage.qml"));
-    m_imageWindow = dynamic_cast<QQuickWindow *>(m_engine->rootObjects()[1]);
-    connect(m_imageWindow, &QQuickWindow::frameSwapped, this, &Controller::onFrameSwapped, Qt::QueuedConnection);
+    if(m_imageWindow == nullptr)
+    {
+        m_engine->load(QUrl("qrc:///BlurImage.qml"));
+        m_imageWindow = dynamic_cast<QQuickWindow *>(m_engine->rootObjects()[1]);
+        connect(m_imageWindow, &QQuickWindow::frameSwapped, this, &Controller::onFrameSwapped, Qt::QueuedConnection);
+    }
+    else
+        _LOG() << "not null";
 }
 
 void Controller::calculateBlurSizeInAThread(const QStringList &fileNames)

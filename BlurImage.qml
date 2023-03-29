@@ -10,6 +10,7 @@ Window {
     maximumWidth: 5000
     width: myImage.width
     height: originImage.height
+
     onHeightChanged: {
         console.log("Phi: onHeightChanged " + height)
     }
