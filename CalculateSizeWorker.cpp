@@ -1,10 +1,10 @@
-#include "WorkerThread.h"
+#include "CalculateSizeWorker.h"
 #include <Logger.h>
 #include <QImageReader>
 //#include <QElapsedTimer>
 
 
-WorkerThread::WorkerThread(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent)
+CalculateSizeWorker::CalculateSizeWorker(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent)
     : QThread(parent)
     , m_fileUrls(fileUrls)
     , m_imageQueue(imageQueue)
@@ -12,7 +12,7 @@ WorkerThread::WorkerThread(const QList<QUrl> &fileUrls, std::queue<Image> *image
 
 }
 
-void WorkerThread::run() {
+void CalculateSizeWorker::run() {
     //    QElapsedTimer timer;
     //    timer.start();
     for(QUrl source : m_fileUrls){

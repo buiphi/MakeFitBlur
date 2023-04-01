@@ -1,16 +1,16 @@
-#ifndef WORKERTHREAD_H
-#define WORKERTHREAD_H
+#ifndef CalculateSizeWorker_H
+#define CalculateSizeWorker_H
 
 #include <QThread>
 #include <ImageModel.h>
 #include <queue>
 #include <QUrl>
 
-class WorkerThread : public QThread
+class CalculateSizeWorker : public QThread
 {
     Q_OBJECT
 public:
-    WorkerThread(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent = nullptr);
+    CalculateSizeWorker(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent = nullptr);
 
     void run() override;
 
@@ -22,4 +22,4 @@ private:
     std::queue<Image> *m_imageQueue;
 };
 
-#endif // WORKERTHREAD_H
+#endif // CalculateSizeWorker_H

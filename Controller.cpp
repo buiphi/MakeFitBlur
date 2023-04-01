@@ -3,7 +3,7 @@
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
 #include "Logger.h"
-#include "WorkerThread.h"
+#include "CalculateSizeWorker.h"
 
 Controller::Controller(ImageModel *imageModel, QQmlApplicationEngine *engine)
     : QObject(engine)
@@ -128,8 +128,8 @@ void Controller::createImageWindow()
 
 void Controller::calculateBlurSize(const QList<QUrl> &fileUrls)
 {
-    WorkerThread *workerThread = new WorkerThread(fileUrls, &m_imageQueue);
-    connect(workerThread, &WorkerThread::calculateBlurSizeFinished, this, &Controller::onCalculateBlurSizeFinished);
-    connect(workerThread, &WorkerThread::finished, workerThread, &QObject::deleteLater);
+    CalculateSizeWorker *workerThread = new CalculateSizeWorker(fileUrls, &m_imageQueue);
+    connect(workerThread, &CalculateSizeWorker::calculateBlurSizeFinished, this, &Controller::onCalculateBlurSizeFinished);
+    connect(workerThread, &CalculateSizeWorker::finished, workerThread, &QObject::deleteLater);
     workerThread->start();
 }
