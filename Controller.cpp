@@ -1,13 +1,8 @@
 #include "Controller.h"
-#include <QQuickView>
 #include <QStandardPaths>
-#include <QQmlEngine>
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
-#include <QCoreApplication>
-#include <QApplication>
-#include <QThread>
-#include <Logger.h>
+#include "Logger.h"
 #include "WorkerThread.h"
 
 Controller::Controller(ImageModel *imageModel, QQmlApplicationEngine *engine)

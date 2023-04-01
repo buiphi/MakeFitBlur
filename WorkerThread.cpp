@@ -1,6 +1,5 @@
 #include "WorkerThread.h"
 #include <Logger.h>
-#include <QImage>
 #include <QImageReader>
 //#include <QElapsedTimer>
 

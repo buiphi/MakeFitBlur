@@ -2,9 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <Controller.h>
-#include <QQmlContext>
 
-#include <iostream>
 #include <csignal>
 #include "Logger.h"
 
