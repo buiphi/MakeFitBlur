@@ -1,42 +1,40 @@
 #include "WorkerThread.h"
 #include <Logger.h>
 #include <QImage>
+#include <QImageReader>
+//#include <QElapsedTimer>
 
 
-WorkerThread::WorkerThread(const QStringList &fileNames, std::queue<MyImage> *myImageQueue, QObject *parent)
+WorkerThread::WorkerThread(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent)
     : QThread(parent)
-    , m_fileNames(fileNames)
-    , m_myImageQueue(myImageQueue)
+    , m_fileUrls(fileUrls)
+    , m_imageQueue(imageQueue)
 {
 
 }
 
 void WorkerThread::run() {
-    _LOG();
-    for(QString fileName : m_fileNames){
-        QImage image;
-        int width = 0;
-        int height = 0;
-        if(image.load(fileName))
+//    QElapsedTimer timer;
+//    timer.start();
+    for(QUrl source : m_fileUrls){
+        QImageReader imageReader(source.toLocalFile());
+        int width = imageReader.size().width();
+        int height = imageReader.size().height();
+
+        _LOG() << "Before >>> Image " << source.toLocalFile() << ", width: " << width << ", height: " << height;
+
+        if((float)width / height == (float)16/9)
+            _LOG() << "good";
+        else
         {
-            width = image.width();
-            height = image.height();
-
-            qDebug() << "Before >>> Image " << fileName << ", width: " << width << ", height: " << height;
-
-            if((float)image.width() / image.height() == (float)16/9)
-                qDebug() << "good";
-            else
-            {
-                qDebug() << "not good";
-                width *= (float)16 / 9;
-                height *= (float)16 / 9;
-            }
-            qDebug() << "After >>> Image " << fileName << ", width: " << width << ", height: " << height;
+            _LOG() << "not good";
+            width *= (float)16 / 9;
+            height *= (float)16 / 9;
         }
-        MyImage myImage{width, height, fileName};
-        m_myImageQueue->push(myImage);
-    }
 
+        _LOG() << "After >>> Image " << source.toLocalFile()<< ", width: " << width << ", height: " << height;
+        m_imageQueue->push(Image{width, height, source});
+    }
+//    _LOG() << "The slow operation took" << timer.elapsed();
     emit calculateBlurSizeFinished();
 }

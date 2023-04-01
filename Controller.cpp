@@ -1,6 +1,5 @@
 #include "Controller.h"
 #include <QQuickView>
-#include <QFileDialog>
 #include <QStandardPaths>
 #include <QQmlEngine>
 #include <QQmlContext>
@@ -11,16 +10,16 @@
 #include <Logger.h>
 #include "WorkerThread.h"
 
-Controller::Controller(MyImageModel *myImageModel, QQmlApplicationEngine *engine)
+Controller::Controller(ImageModel *imageModel, QQmlApplicationEngine *engine)
     : QObject(engine)
     , m_imageWindow(nullptr)
     , m_engine(engine)
     , m_totalImage(0)
     , m_completedImage(0)
     , m_radius(60)
-    , m_myImageModel(myImageModel)
+    , m_imageModel(imageModel)
 {
-    m_engine->rootContext()->setContextProperty("myImage", m_myImageModel);
+    m_engine->rootContext()->setContextProperty("myImage", m_imageModel);
     m_engine->rootContext()->setContextProperty("controller", this);
 }
 
@@ -33,45 +32,38 @@ void Controller::onFrameSwapped()
 {
     _LOG() << "onFrameSwapped";
 
-    if(m_myImageQueue.empty())
+    if(m_imageQueue.empty())
     {
         _LOG() << "empty !!!";
         return;
     }
 
     save();
-    m_myImageQueue.pop();
+    m_imageQueue.pop();
     update();
 }
 
-void Controller::open()
+void Controller::open(const QList<QUrl> &fileUrls)
 {
-    _LOG() << "open " << QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-
-    QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
-                                                          tr("Open Image"),
-                                                          QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
-                                                          tr("Image Files (*.png *.jpg *.bmp)"));
-
-    if(fileNames.isEmpty())
+    if(fileUrls.isEmpty())
         return;
 
-    m_totalImage = fileNames.size();
-    m_myImageModel->setTotal(m_totalImage);
-    m_myImageModel->setCompleteTotal(0);
+    m_totalImage = fileUrls.size();
+    m_imageModel->setTotal(m_totalImage);
+    m_imageModel->setCompleteTotal(0);
 
-    calculateBlurSizeInAThread(fileNames);
+    calculateBlurSizeInAThread(fileUrls);
 }
 
 void Controller::save()
 {
-    if(m_myImageQueue.empty())
+    if(m_imageQueue.empty())
     {
         _LOG() << "empty !!!";
         return;
     }
 
-    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_myImageQueue.front().source).baseName() + "_blur.png";
+    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_imageQueue.front().source.toString()).baseName() + "_blur.png";
 
     if(QFile::exists(nameBlur))
     {
@@ -84,42 +76,36 @@ void Controller::save()
     bool result = m_imageWindow->grabWindow().save(nameBlur);
     if(result)
     {
-        _LOG() << "Saved: " << nameBlur;
+        _LOG() << "Saved";
         ++m_completedImage;
-        m_myImageModel->setCompleteTotal(m_completedImage);
+        m_imageModel->setCompleteTotal(m_completedImage);
     }
 }
 
-void Controller::save(int radius)
+void Controller::save(const QUrl &folder)
 {
-    if(m_myImageQueue.empty())
+    if(m_imageQueue.empty())
     {
         _LOG() << "empty !!!";
         return;
     }
 
-    m_selectedFolder = QFileDialog::getExistingDirectory(nullptr, tr("Open Directory"),
-                                                         QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
-                                                         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-    m_radius = radius;
+    m_selectedFolder = folder.toLocalFile();
     createImageWindow();
-    m_myImageModel->update(m_myImageQueue.front().width
-                           , m_myImageQueue.front().height
-                           , "file:///" + m_myImageQueue.front().source);
+    update();
 }
 
 void Controller::update()
 {
-    if(m_myImageQueue.empty())
+    if(m_imageQueue.empty())
     {
         _LOG() << "empty";
         return;
     }
 
-    m_myImageModel->update(m_myImageQueue.front().width
-                           , m_myImageQueue.front().height
-                           , "file:///" + m_myImageQueue.front().source);
+    m_imageModel->update(m_imageQueue.front().width
+                           , m_imageQueue.front().height
+                           , m_imageQueue.front().source);
 }
 
 void Controller::onCalculateBlurSizeFinished()
@@ -129,7 +115,6 @@ void Controller::onCalculateBlurSizeFinished()
 
 void Controller::createImageWindow()
 {
-    m_myImageModel->setRadius(m_radius);
     if(m_imageWindow == nullptr)
     {
         m_engine->load(QUrl("qrc:///BlurImage.qml"));
@@ -140,9 +125,9 @@ void Controller::createImageWindow()
         _LOG() << "not null";
 }
 
-void Controller::calculateBlurSizeInAThread(const QStringList &fileNames)
+void Controller::calculateBlurSizeInAThread(const QList<QUrl> &fileUrls)
 {
-    WorkerThread *workerThread = new WorkerThread(fileNames, &m_myImageQueue);
+    WorkerThread *workerThread = new WorkerThread(fileUrls, &m_imageQueue);
     connect(workerThread, &WorkerThread::calculateBlurSizeFinished, this, &Controller::onCalculateBlurSizeFinished);
     connect(workerThread, &WorkerThread::finished, workerThread, &QObject::deleteLater);
     workerThread->start();

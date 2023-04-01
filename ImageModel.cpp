@@ -1,6 +1,6 @@
 #include "ImageModel.h"
 
-MyImageModel::MyImageModel(QObject *parent)
+ImageModel::ImageModel(QObject *parent)
     : QObject(parent)
     , m_width(0)
     , m_height(0)
@@ -12,44 +12,44 @@ MyImageModel::MyImageModel(QObject *parent)
 
 }
 
-int MyImageModel::width() const
+int ImageModel::width() const
 {
     return m_width;
 }
 
-int MyImageModel::height() const
+int ImageModel::height() const
 {
     return m_height;
 }
 
-QString MyImageModel::source() const
+QUrl ImageModel::source() const
 {
     return m_source;
 }
 
-int MyImageModel::radius() const
+int ImageModel::radius() const
 {
     return m_radius;
 }
 
-int MyImageModel::total() const
+int ImageModel::total() const
 {
     return m_total;
 }
 
-int MyImageModel::completeTotal() const
+int ImageModel::completeTotal() const
 {
     return m_completeTotal;
 }
 
-void MyImageModel::update(int width, int height, const QString &source)
+void ImageModel::update(int width, int height, const QUrl &source)
 {
     setWidth(width);
     setHeight(height);
     setSource(source);
 }
 
-void MyImageModel::setWidth(int width)
+void ImageModel::setWidth(int width)
 {
     if (m_width == width)
         return;
@@ -58,7 +58,7 @@ void MyImageModel::setWidth(int width)
     emit widthChanged(m_width);
 }
 
-void MyImageModel::setHeight(int height)
+void ImageModel::setHeight(int height)
 {
     if (m_height == height)
         return;
@@ -67,7 +67,7 @@ void MyImageModel::setHeight(int height)
     emit heightChanged(m_height);
 }
 
-void MyImageModel::setSource(QString source)
+void ImageModel::setSource(const QUrl &source)
 {
     if (m_source == source)
         return;
@@ -76,7 +76,7 @@ void MyImageModel::setSource(QString source)
     emit sourceChanged(m_source);
 }
 
-void MyImageModel::setRadius(int radius)
+void ImageModel::setRadius(int radius)
 {
     if (m_radius == radius)
         return;
@@ -85,7 +85,7 @@ void MyImageModel::setRadius(int radius)
     emit radiusChanged(m_radius);
 }
 
-void MyImageModel::setTotal(int total)
+void ImageModel::setTotal(int total)
 {
     if (m_total == total)
         return;
@@ -94,7 +94,7 @@ void MyImageModel::setTotal(int total)
     emit totalChanged(m_total);
 }
 
-void MyImageModel::setCompleteTotal(int completeTotal)
+void ImageModel::setCompleteTotal(int completeTotal)
 {
     if (m_completeTotal == completeTotal)
         return;

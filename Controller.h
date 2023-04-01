@@ -13,7 +13,7 @@ class Controller : public QObject
 {
     Q_OBJECT
 public:
-    Controller(MyImageModel *myImageModel,QQmlApplicationEngine *engine);
+    Controller(ImageModel *ImageModel,QQmlApplicationEngine *engine);
 
     ~Controller();
 
@@ -22,9 +22,9 @@ signals:
 
 public slots:
     void onFrameSwapped();
-    void open();
+    void open(const QList<QUrl> &fileUrls);
     void save();
-    void save(int radius);
+    void save(const QUrl &folder);
 
     void update();
     void onCalculateBlurSizeFinished();
@@ -38,11 +38,11 @@ private:
     QString m_selectedFolder;
     int m_radius;
 
-    std::queue<MyImage> m_myImageQueue;
-    MyImageModel *m_myImageModel;
+    std::queue<Image> m_imageQueue;
+    ImageModel *m_imageModel;
 private:
     void createImageWindow();
-    void calculateBlurSizeInAThread(const QStringList &fileNames);
+    void calculateBlurSizeInAThread(const QList<QUrl> &fileUrls);
 
 };
 

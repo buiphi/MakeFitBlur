@@ -6,16 +6,16 @@ Window {
     x: 0
     y: 0
     visible: true
-    maximumHeight: 5000
-    maximumWidth: 5000
+    maximumHeight: 1440
+    maximumWidth: 2560
     width: myImage.width
     height: originImage.height
 
     onHeightChanged: {
-        console.log("Phi: onHeightChanged " + height)
+        console.log("onHeightChanged " + height)
     }
 
-    title: qsTr("Blur Image")
+    title: myImage.source
     objectName: "window"
 
     FastBlur {

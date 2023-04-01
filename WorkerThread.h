@@ -4,12 +4,13 @@
 #include <QThread>
 #include <ImageModel.h>
 #include <queue>
+#include <QUrl>
 
 class WorkerThread : public QThread
 {
     Q_OBJECT
 public:
-    WorkerThread(const QStringList &fileNames, std::queue<MyImage> *myImageQueue, QObject *parent = nullptr);
+    WorkerThread(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent = nullptr);
 
     void run() override;
 
@@ -17,8 +18,8 @@ signals:
     void calculateBlurSizeFinished();
 
 private:
-    QStringList   m_fileNames;
-    std::queue<MyImage> *m_myImageQueue;
+    QList<QUrl>   m_fileUrls;
+    std::queue<Image> *m_imageQueue;
 };
 
 #endif // WORKERTHREAD_H

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
 
@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    MyImageModel *myImageModel = new MyImageModel;
-    Controller controller(myImageModel, &engine);
+    ImageModel imageModel;
+    Controller controller(&imageModel, &engine);
 
     engine.load(url);
 
