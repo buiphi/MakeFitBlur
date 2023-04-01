@@ -17,6 +17,7 @@ SOURCES += \
         CalculateSizeWorker.cpp \
         Controller.cpp \
         ImageModel.cpp \
+        SaveImageWorker.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -36,4 +37,5 @@ HEADERS += \
     CalculateSizeWorker.h \
     Controller.h \
     ImageModel.h \
-    Logger.h
+    Logger.h \
+    SaveImageWorker.h

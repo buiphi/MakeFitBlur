@@ -16,6 +16,7 @@ Window {
         onClicked: {
             fileDialog.folder = fileDialog.shortcuts.pictures
             fileDialog.selectFolder = false
+            fileDialog.selectMultiple = true
             fileDialog.open()
         }
     }

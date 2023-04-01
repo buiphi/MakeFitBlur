@@ -11,6 +11,7 @@ class CalculateSizeWorker : public QThread
     Q_OBJECT
 public:
     CalculateSizeWorker(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent = nullptr);
+    virtual ~CalculateSizeWorker();
 
     void run() override;
 

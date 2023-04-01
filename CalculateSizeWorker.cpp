@@ -9,12 +9,18 @@ CalculateSizeWorker::CalculateSizeWorker(const QList<QUrl> &fileUrls, std::queue
     , m_fileUrls(fileUrls)
     , m_imageQueue(imageQueue)
 {
+    _LOG() << "constructor";
+}
 
+CalculateSizeWorker::~CalculateSizeWorker()
+{
+    _LOG() << "destructor";
 }
 
 void CalculateSizeWorker::run() {
     //    QElapsedTimer timer;
     //    timer.start();
+
     for(QUrl source : m_fileUrls){
         QImageReader imageReader(source.toLocalFile());
         int width = imageReader.size().width();

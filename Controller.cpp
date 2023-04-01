@@ -4,6 +4,8 @@
 #include <QQmlApplicationEngine>
 #include "Logger.h"
 #include "CalculateSizeWorker.h"
+#include "SaveImageWorker.h"
+#include <QThreadPool>
 
 Controller::Controller(ImageModel *imageModel, QQmlApplicationEngine *engine)
     : QObject(engine)
@@ -16,26 +18,22 @@ Controller::Controller(ImageModel *imageModel, QQmlApplicationEngine *engine)
 {
     m_engine->rootContext()->setContextProperty("imageModel", m_imageModel);
     m_engine->rootContext()->setContextProperty("controller", this);
+
+    QThreadPool::globalInstance()->setMaxThreadCount(5);
 }
 
 Controller::~Controller()
 {
-
 }
 
 void Controller::onFrameSwapped()
 {
     _LOG() << "onFrameSwapped";
-
     if(m_imageQueue.empty())
-    {
-        _LOG() << "empty !!!";
         return;
-    }
-
     save();
     m_imageQueue.pop();
-    update();
+    updateModel();
 }
 
 void Controller::open(const QList<QUrl> &fileUrls)
@@ -52,29 +50,13 @@ void Controller::open(const QList<QUrl> &fileUrls)
 
 void Controller::save()
 {
-    if(m_imageQueue.empty())
-    {
-        _LOG() << "empty !!!";
-        return;
-    }
+    QString name = m_selectedFolder + "/" + m_imageQueue.front().source.fileName();
+    SaveImageWorker *saveWorker = new SaveImageWorker(name, m_imageWindow->grabWindow());
+    connect(saveWorker, &SaveImageWorker::saveFinished, this, &Controller::saveFinished);
 
-    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_imageQueue.front().source.toString()).baseName() + ".png";
+    QThreadPool::globalInstance()->start(saveWorker);
 
-//    if(QFile::exists(nameBlur))
-//    {
-//        _LOG() << "File exist";
-//        return;
-//    }
-
-    _LOG() << "Starting save: " << nameBlur;
-
-    bool result = m_imageWindow->grabWindow().save(nameBlur);
-    if(result)
-    {
-        _LOG() << "Saved";
-        ++m_completedImage;
-        m_imageModel->setCompleteTotal(m_completedImage);
-    }
+    emit saveToDisk(name, m_imageWindow->grabWindow());
 }
 
 void Controller::save(const QUrl &folder)
@@ -87,17 +69,13 @@ void Controller::save(const QUrl &folder)
 
     m_selectedFolder = folder.toLocalFile();
     createImageWindow();
-    update();
+    updateModel();
 }
 
-void Controller::update()
+void Controller::updateModel()
 {
     if(m_imageQueue.empty())
-    {
-        _LOG() << "empty";
         return;
-    }
-
     m_imageModel->update(m_imageQueue.front().width
                          , m_imageQueue.front().height
                          , m_imageQueue.front().source);
@@ -106,6 +84,12 @@ void Controller::update()
 void Controller::onCalculateBlurSizeFinished()
 {
     _LOG();
+}
+
+void Controller::saveFinished()
+{
+    ++m_completedImage;
+    m_imageModel->setCompleteTotal(m_completedImage);
 }
 
 void Controller::createImageWindow()
@@ -130,6 +114,6 @@ void Controller::calculateBlurSize(const QList<QUrl> &fileUrls)
 {
     CalculateSizeWorker *workerThread = new CalculateSizeWorker(fileUrls, &m_imageQueue);
     connect(workerThread, &CalculateSizeWorker::calculateBlurSizeFinished, this, &Controller::onCalculateBlurSizeFinished);
-    connect(workerThread, &CalculateSizeWorker::finished, workerThread, &QObject::deleteLater);
+    connect(workerThread, &QThread::finished, workerThread, &QObject::deleteLater, Qt::QueuedConnection);
     workerThread->start();
 }
