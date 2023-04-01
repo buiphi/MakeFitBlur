@@ -38,7 +38,7 @@ private:
     QString m_selectedFolder;
     int m_radius;
 
-    std::queue<Image> m_imageQueue;
+    std::queue<std::unique_ptr<Image>> m_imageQueue;
     ImageModel *m_imageModel;
 private:
     void createImageWindow();

@@ -4,7 +4,7 @@
 //#include <QElapsedTimer>
 
 
-CalculateSizeWorker::CalculateSizeWorker(const QList<QUrl> &fileUrls, std::queue<Image> *imageQueue, QObject *parent)
+CalculateSizeWorker::CalculateSizeWorker(const QList<QUrl> &fileUrls, std::queue<std::unique_ptr<Image>> *imageQueue, QObject *parent)
     : QThread(parent)
     , m_fileUrls(fileUrls)
     , m_imageQueue(imageQueue)
@@ -32,7 +32,7 @@ void CalculateSizeWorker::run() {
         }
 
         _LOG() << "After >>> Image " << source.toLocalFile()<< ", width: " << width << ", height: " << height;
-        m_imageQueue->push(Image{width, height, source});
+        m_imageQueue->emplace(new Image{width, height, source});
     }
     //    _LOG() << "The slow operation took" << timer.elapsed();
     emit calculateBlurSizeFinished();
