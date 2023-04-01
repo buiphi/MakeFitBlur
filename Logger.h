@@ -5,7 +5,6 @@
 #include <QString>
 #include <QFileInfo>
 
-#include <sstream>
 
 #define _LOG() qDebug() << baseMessage(__FILE__, __FUNCTION__, __LINE__)
 
@@ -17,6 +16,3 @@ inline QString baseMessage(const QString &file, const QString &func, int line){
 }
 
 #endif // LOGGER_H
-
-
-

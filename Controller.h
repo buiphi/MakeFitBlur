@@ -42,7 +42,7 @@ private:
     ImageModel *m_imageModel;
 private:
     void createImageWindow();
-    void calculateBlurSizeInAThread(const QList<QUrl> &fileUrls);
+    void calculateBlurSize(const QList<QUrl> &fileUrls);
 
 };
 

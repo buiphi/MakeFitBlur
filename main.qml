@@ -14,6 +14,7 @@ Window {
         text: "open"
         objectName: "button"
         onClicked: {
+            fileDialog.folder = fileDialog.shortcuts.pictures
             fileDialog.selectFolder = false
             fileDialog.open()
         }
@@ -43,7 +44,7 @@ Window {
     TextField{
         id: txtRadius
         y: 50
-        text: myImage.radius
+        text: imageModel.radius
         horizontalAlignment: Text.AlignRight
         validator: IntValidator {bottom: 1; top: 1000000000}
         selectByMouse: true
@@ -58,7 +59,7 @@ Window {
     Button{
         text: "save"
         objectName: "save"
-        enabled: myImage.total != 0
+        enabled: imageModel.total != 0 && imageModel.total > imageModel.completeTotal
         y : 100
         onClicked: {
             fileDialog.folder = fileDialog.shortcuts.pictures
@@ -69,11 +70,11 @@ Window {
 
     Text{
         y: 150
-        text: "Total: " + myImage.total
+        text: "Total: " + imageModel.total
     }
 
     Text {
         y: 200
-        text: "Completed: " + myImage.completeTotal
+        text: "Completed: " + imageModel.completeTotal
     }
 }

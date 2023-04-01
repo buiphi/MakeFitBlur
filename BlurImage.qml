@@ -6,30 +6,31 @@ Window {
     x: 0
     y: 0
     visible: true
-    maximumHeight: 1440
-    maximumWidth: 2560
-    width: myImage.width
+    maximumHeight: 5000
+    maximumWidth: 5000
+    width: imageModel.width
     height: originImage.height
 
     onHeightChanged: {
         console.log("onHeightChanged " + height)
     }
 
-    title: myImage.source
+    title: imageModel.source
     objectName: "window"
 
     FastBlur {
-        width: myImage.width
-        height: myImage.height
+        id: blur
+        width: imageModel.width
+        height: imageModel.height
         anchors.verticalCenter: parent.verticalCenter
 
         source : originImage
-        radius: myImage.radius
+        radius: imageModel.radius
 
-        Image{
-            id: originImage
-            source: myImage.source
-            anchors.centerIn: parent
-        }
+    }
+    Image{
+        id: originImage
+        source: imageModel.source
+        anchors.centerIn: blur
     }
 }

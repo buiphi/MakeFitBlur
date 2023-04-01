@@ -14,8 +14,8 @@ WorkerThread::WorkerThread(const QList<QUrl> &fileUrls, std::queue<Image> *image
 }
 
 void WorkerThread::run() {
-//    QElapsedTimer timer;
-//    timer.start();
+    //    QElapsedTimer timer;
+    //    timer.start();
     for(QUrl source : m_fileUrls){
         QImageReader imageReader(source.toLocalFile());
         int width = imageReader.size().width();
@@ -28,13 +28,13 @@ void WorkerThread::run() {
         else
         {
             _LOG() << "not good";
-            width *= (float)16 / 9;
-            height *= (float)16 / 9;
+            width = height * (float)16 / 9;
+            height *= (float) width / imageReader.size().width();
         }
 
         _LOG() << "After >>> Image " << source.toLocalFile()<< ", width: " << width << ", height: " << height;
         m_imageQueue->push(Image{width, height, source});
     }
-//    _LOG() << "The slow operation took" << timer.elapsed();
+    //    _LOG() << "The slow operation took" << timer.elapsed();
     emit calculateBlurSizeFinished();
 }

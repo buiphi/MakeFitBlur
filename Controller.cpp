@@ -19,7 +19,7 @@ Controller::Controller(ImageModel *imageModel, QQmlApplicationEngine *engine)
     , m_radius(60)
     , m_imageModel(imageModel)
 {
-    m_engine->rootContext()->setContextProperty("myImage", m_imageModel);
+    m_engine->rootContext()->setContextProperty("imageModel", m_imageModel);
     m_engine->rootContext()->setContextProperty("controller", this);
 }
 
@@ -52,7 +52,7 @@ void Controller::open(const QList<QUrl> &fileUrls)
     m_imageModel->setTotal(m_totalImage);
     m_imageModel->setCompleteTotal(0);
 
-    calculateBlurSizeInAThread(fileUrls);
+    calculateBlurSize(fileUrls);
 }
 
 void Controller::save()
@@ -63,13 +63,13 @@ void Controller::save()
         return;
     }
 
-    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_imageQueue.front().source.toString()).baseName() + "_blur.png";
+    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_imageQueue.front().source.toString()).baseName() + ".png";
 
-    if(QFile::exists(nameBlur))
-    {
-        _LOG() << "File exist";
-        return;
-    }
+//    if(QFile::exists(nameBlur))
+//    {
+//        _LOG() << "File exist";
+//        return;
+//    }
 
     _LOG() << "Starting save: " << nameBlur;
 
@@ -104,8 +104,8 @@ void Controller::update()
     }
 
     m_imageModel->update(m_imageQueue.front().width
-                           , m_imageQueue.front().height
-                           , m_imageQueue.front().source);
+                         , m_imageQueue.front().height
+                         , m_imageQueue.front().source);
 }
 
 void Controller::onCalculateBlurSizeFinished()
@@ -120,12 +120,18 @@ void Controller::createImageWindow()
         m_engine->load(QUrl("qrc:///BlurImage.qml"));
         m_imageWindow = dynamic_cast<QQuickWindow *>(m_engine->rootObjects()[1]);
         connect(m_imageWindow, &QQuickWindow::frameSwapped, this, &Controller::onFrameSwapped, Qt::QueuedConnection);
+        connect(m_imageWindow, &QObject::destroyed, [&]{
+            _LOG() << "destroyed";
+        });
+        connect(m_imageWindow, &QQuickWindow::visibleChanged , [&]{
+            _LOG() << "visibleChanged";
+        });
     }
     else
-        _LOG() << "not null";
+        m_imageWindow->setVisible(true);
 }
 
-void Controller::calculateBlurSizeInAThread(const QList<QUrl> &fileUrls)
+void Controller::calculateBlurSize(const QList<QUrl> &fileUrls)
 {
     WorkerThread *workerThread = new WorkerThread(fileUrls, &m_imageQueue);
     connect(workerThread, &WorkerThread::calculateBlurSizeFinished, this, &Controller::onCalculateBlurSizeFinished);
