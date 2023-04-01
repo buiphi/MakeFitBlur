@@ -5,6 +5,9 @@
 #include <QObject>
 
 struct Image{
+    //constructor for queue emplace
+    Image(const int &w, const int &h, const QUrl &s);
+
     int width;
     int height;
     QUrl source;

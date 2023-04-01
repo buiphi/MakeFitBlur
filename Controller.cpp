@@ -58,7 +58,7 @@ void Controller::save()
         return;
     }
 
-    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_imageQueue.front()->source.toString()).baseName() + ".png";
+    QString nameBlur = m_selectedFolder + "/" + QFileInfo(m_imageQueue.front().source.toString()).baseName() + ".png";
 
 //    if(QFile::exists(nameBlur))
 //    {
@@ -98,9 +98,9 @@ void Controller::update()
         return;
     }
 
-    m_imageModel->update(m_imageQueue.front()->width
-                         , m_imageQueue.front()->height
-                         , m_imageQueue.front()->source);
+    m_imageModel->update(m_imageQueue.front().width
+                         , m_imageQueue.front().height
+                         , m_imageQueue.front().source);
 }
 
 void Controller::onCalculateBlurSizeFinished()

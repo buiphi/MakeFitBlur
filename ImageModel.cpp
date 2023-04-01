@@ -102,3 +102,9 @@ void ImageModel::setCompleteTotal(int completeTotal)
     m_completeTotal = completeTotal;
     emit completeTotalChanged(m_completeTotal);
 }
+
+Image::Image(const int &w, const int &h, const QUrl &s)
+    : width(w)
+    , height(h)
+    , source(s){
+}
